@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <PackageId>WebAppTemplates</PackageId>
+        <Version>1.0.0</Version>
+        <Title>WebAppTemplates</Title>
+        <Authors>ChiaraBm</Authors>
+        <Description>Templates for web based applications</Description>
+        <PackageProjectUrl>https://github.com/ChiaraBm/WebAppTemplates</PackageProjectUrl>
+
+        <PackageType>Template</PackageType>
+        <TargetFramework>net10.0</TargetFramework>
+        <IncludeContentInPack>true</IncludeContentInPack>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <ContentTargetFolders>content</ContentTargetFolders>
+        <NoWarn>$(NoWarn);NU5128</NoWarn>
+        <NoDefaultExcludes>true</NoDefaultExcludes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <LocalizeTemplates>false</LocalizeTemplates>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.TemplateEngine.Tasks" Version="*" PrivateAssets="all" IsImplicitlyDefined="true"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="content\**\*" />
+
+        <!-- Build artifacts -->
+        <Content Remove="content\**\bin\**" />
+        <Content Remove="content\**\obj\**" />
+
+        <!-- Node / frontend -->
+        <Content Remove="content\**\node_modules\**" />
+        <Content Remove="content\**\package-lock.json" />
+
+        <!-- Environment / user-specific -->
+        <Content Remove="content\**\.env" />
+        <Content Remove="content\**\*.user" />
+        <Content Remove="content\**\.idea\**" />
+
+        <!-- Config files -->
+        <Content Remove="content\**\appsettings.json" />
+        <Content Remove="content\**\appsettings.Development.json" />
+
+        <!-- Generated / minified assets -->
+        <Content Remove="content\**\*.min.css" />
+        
+        <Compile Remove="**\*"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath=""/>
+    </ItemGroup>
+</Project>

@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "ChiaraBm",
+  "classifications": [
+    "Web",
+    "ASP.NET",
+    "Blazor",
+    "WebAssembly"
+  ],
+  "name": "WebApp",
+  "description": "Blazor WASM Web App hosted by an ASP.NET Core Web API using ShadcnBlazor, OIDC and PostgreSQL",
+  "precedence": "0",
+  "identity": "WebAppTemplates.WebApp",
+  "shortName": "webapptemplates-wasm",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "WebAppTemplate",
+  "sources": [
+    {
+      "source": "./",
+      "target": "./",
+      "include": [
+        "**/*"
+      ],
+      "exclude": [
+        "**/[Bb]in/**",
+        "**/[Oo]bj/**",
+        "**/.template.config/**",
+        "**/*.filelist",
+        "**/*.user",
+        "**/*.lock.json",
+        "**/node_modules/**",
+        "**/storage/**",
+        "**/.idea/**",
+        "**/.idea/**",
+        "**/style.min.css"
+      ]
+    }
+  ],
+  "postActions": [
+    {
+      "actionId": "AC1156F7-BB77-4DB8-B28F-24EEBCCA1E5C",
+      "condition": "true",
+      "id": "intructions",
+      "manualInstructions": [
+        {
+          "text": "Template successfully applied. Before running the generated application, go to the Api project, copy the appsettings.Example.json and create a new appsettings.json file with the same content and fill in connection credentials to a postgres database. Also go into the Frontend project and open a terminal in the styles folder and run 'npn init' and 'npm run tailwind' to ensure the styles have been build"
+        }
+      ]
+    }
+  ]
+}

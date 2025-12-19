@@ -1,0 +1,112 @@
+﻿@page "/users"
+
+@using LucideBlazor
+@using ShadcnBlazor.Buttons
+@using ShadcnBlazor.DataGrids
+@using ShadcnBlazor.Dropdowns
+@using ShadcnBlazor.Extras.AlertDialogs
+@using ShadcnBlazor.Extras.Toasts
+@using ShadcnBlazor.Tabels
+@using WebAppTemplate.Shared.Http.Requests
+@using WebAppTemplate.Shared.Http.Responses
+@using WebAppTemplate.Shared.Http.Responses.Users
+
+@inject HttpClient HttpClient
+@inject AlertDialogService AlertDialogService
+@inject ToastService ToastService
+@inject NavigationManager Navigation
+
+<div class="flex flex-row justify-between">
+    <div class="flex flex-col">
+        <h1 class="text-xl font-semibold">Users</h1>
+        <div class="text-muted-foreground">
+            Manage users registered in your application
+        </div>
+    </div>
+    <div class="flex flex-row gap-x-1.5">
+        <Button>
+            <Slot>
+                <a href="/users/create" @attributes="context">
+                    <PlusIcon />
+                    Create
+                </a>
+            </Slot>
+        </Button>
+    </div>
+</div>
+
+<div class="mt-8">
+    <DataGrid @ref="Grid" TGridItem="UserResponse" Loader="LoadAsync" PageSize="10">
+        <PropertyColumn HeadClassName="text-left" CellClassName="text-left" Field="u => u.Id"/>
+        <PropertyColumn HeadClassName="text-left" CellClassName="text-left" IsFilterable="true"
+                        Identifier="@nameof(UserResponse.Username)" Field="u => u.Username"/>
+        <PropertyColumn HeadClassName="text-left" CellClassName="text-left" IsFilterable="true"
+                        Identifier="@nameof(UserResponse.Email)" Field="u => u.Email"/>
+        <TemplateColumn>
+            <CellTemplate>
+                <TableCell>
+                    <div class="flex flex-row items-center justify-end me-3">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <Slot Context="dropdownSlot">
+                                    <Button Size="ButtonSize.IconSm" Variant="ButtonVariant.Ghost" @attributes="dropdownSlot">
+                                        <EllipsisIcon />
+                                    </Button>
+                                </Slot>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem OnClick="() => Edit(context)">
+                                    Edit
+                                    <DropdownMenuShortcut>
+                                        <PenIcon />
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem OnClick="() => DeleteAsync(context)" Variant="DropdownMenuItemVariant.Destructive">
+                                    Delete
+                                    <DropdownMenuShortcut>
+                                        <TrashIcon />
+                                    </DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                </TableCell>
+            </CellTemplate>
+        </TemplateColumn>
+    </DataGrid>
+</div>
+
+@code
+{
+    private DataGrid<UserResponse> Grid;
+    
+    private async Task<DataGridResponse<UserResponse>> LoadAsync(DataGridRequest<UserResponse> request)
+    {
+        var query = $"?startIndex={request.StartIndex}&length={request.Length}";
+        var filterOptions = request.Filters.Count > 0 ? new FilterOptions(request.Filters) : null;
+
+        var response = await HttpClient.GetFromJsonAsync<PagedData<UserResponse>>(
+            $"api/users{query}&filterOptions={filterOptions}",
+            Constants.SerializerOptions
+        );
+
+        return new DataGridResponse<UserResponse>(response!.Data, response.TotalLength);
+    }
+
+    private void Edit(UserResponse response) => Navigation.NavigateTo($"/users/{response.Id}");
+
+    private async Task DeleteAsync(UserResponse user)
+    {
+        await AlertDialogService.ConfirmDangerAsync(
+            $"Deletion of user {user.Username}",
+                "Do you really want to delete this user? This action cannot be undone",
+                async () =>
+                {
+                    await HttpClient.DeleteAsync($"api/users/{user.Id}");
+                    await ToastService.SuccessAsync("User deletion", $"Successfully deleted user {user.Username}");
+
+                    await Grid.RefreshAsync();
+                }
+        );
+    }
+}

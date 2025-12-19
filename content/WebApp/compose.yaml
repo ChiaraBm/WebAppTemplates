@@ -1,0 +1,36 @@
+﻿services:
+  api:
+    # Meta
+    image: webapp.api
+    
+    # Build
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: WebAppTemplate.Api/Dockerfile
+      args:
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+    
+    # Networks
+    ports:
+      - "8080:8080"
+    
+    # Env Settings
+    environment:
+      # Database settings
+      - "WebApp__Database__Host=${DATABASE_HOST}"
+      - "WebApp__Database__Port=${DATABASE_PORT}"
+      - "WebApp__Database__Username=${DATABASE_USERNAME}"
+      - "WebApp__Database__Password=${DATABASE_PASSWORD}"
+      - "WebApp__Database__Database=${DATABASE_DATABASE}"
+      
+      # OIDC
+      - "WebApp__OIDC__Authority=${OIDC_AUTHORITY}"
+      - "WebApp__OIDC__ClientId=${OIDC_CLIENT_ID}"
+      - "WebApp__OIDC__Client_Secret=${OIDC_CLIENT_SECRET}"
+      - "WebApp__OIDC__RequireHttpsMetadata=${OIDC_REQUIRE_HTTPS_METADATA}"
+      
+      # Logging
+      - "Logging__LogLevel__Default=Information"
+      - "Logging__LogLevel__Microsoft.AspNetCore=Warning"

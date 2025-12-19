@@ -1,0 +1,24 @@
+﻿@page "/notfound"
+
+@using LucideBlazor
+@using ShadcnBlazor.Emptys
+@using ShadcnBlazor.Buttons
+
+<Empty>
+    <EmptyHeader>
+        <EmptyMedia Variant="EmptyMediaVariant.Icon">
+            <FolderOpenIcon/>
+        </EmptyMedia>
+        <EmptyTitle>Page not found</EmptyTitle>
+        <EmptyDescription>
+            The page you requested could not be found
+        </EmptyDescription>
+    </EmptyHeader>
+    <EmptyContent>
+        <Button>
+            <Slot>
+                <a href="/" @attributes="context">Go to home</a>
+            </Slot>
+        </Button>
+    </EmptyContent>
+</Empty>

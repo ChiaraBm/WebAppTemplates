@@ -1,0 +1,105 @@
+﻿@page "/users/{Id:int}"
+
+@using LucideBlazor
+@using ShadcnBlazor.Buttons
+@using ShadcnBlazor.Labels
+@using ShadcnBlazor.Cards
+@using ShadcnBlazor.Extras.Common
+@using ShadcnBlazor.Extras.FormHandlers
+@using ShadcnBlazor.Extras.Toasts
+@using ShadcnBlazor.Inputs
+@using WebAppTemplate.Frontend.Mappers
+@using WebAppTemplate.Shared.Http.Requests.Users
+@using WebAppTemplate.Shared.Http.Responses.Users
+
+@inject HttpClient HttpClient
+@inject NavigationManager Navigation
+@inject ToastService ToastService
+
+<div class="flex flex-row justify-between">
+    <div class="flex flex-col">
+        <h1 class="text-xl font-semibold">Update user</h1>
+        <div class="text-muted-foreground">
+            Update an existing user
+        </div>
+    </div>
+    <div class="flex flex-row gap-x-1.5">
+        <Button Variant="ButtonVariant.Secondary">
+            <Slot>
+                <a href="/users" @attributes="context">
+                    <ChevronLeftIcon/>
+                    Back
+                </a>
+            </Slot>
+        </Button>
+        <Button @onclick="() => Form.SubmitAsync()">
+            <CheckIcon/>
+            Continue
+        </Button>
+    </div>
+</div>
+
+<div class="mt-8">
+    <Card>
+        <CardContent>
+            <LazyLoader Load="LoadAsync">
+                <FormHandler @ref="Form" OnValidSubmit="OnSubmitAsync" Model="Request">
+                    <div class="flex flex-col gap-6">
+                    
+                        <FormValidationSummary />
+                    
+                        <div class="grid gap-2">
+                            <Label for="email">Email</Label>
+                            <InputField
+                                @bind-Value="Request.Email"
+                                id="email"
+                                Type="email"
+                                placeholder="m@example.com"/>
+                        </div>
+
+                        <div class="grid gap-2">
+                            <Label for="email">Username</Label>
+                            <InputField
+                                @bind-Value="Request.Username"
+                                id="username"
+                                Type="text"
+                                placeholder="example_user"/>
+                        </div>
+                    </div>
+                </FormHandler>
+            </LazyLoader>
+        </CardContent>
+    </Card>
+</div>
+
+@code
+{
+    [Parameter] public int Id { get; set; }
+
+    private FormHandler Form;
+    private UpdateUserRequest Request;
+    private UserResponse User;
+    
+    private async Task LoadAsync(LazyLoader _)
+    {
+        var user = await HttpClient.GetFromJsonAsync<UserResponse>($"api/users/{Id}",  Constants.SerializerOptions);
+        User = user!;
+        
+        Request = UserMapper.MapToUpdate(User);
+    }
+    
+    private async Task OnSubmitAsync()
+    {
+        await HttpClient.PatchAsJsonAsync(
+            $"/api/users/{User.Id}",
+            Request
+        );
+
+        await ToastService.SuccessAsync(
+            "User creation",
+            $"Successfully updated user {Request.Username}"
+        );
+
+        Navigation.NavigateTo("/users");
+    }
+}

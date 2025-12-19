@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="compose.yaml" />
+    <File Path=".env.example" />
+  </Folder>
+  <Project Path="WebAppTemplate.Api/WebAppTemplate.Api.csproj" />
+  <Project Path="WebAppTemplate.Frontend/WebAppTemplate.Frontend.csproj" />
+  <Project Path="WebAppTemplate.Shared/WebAppTemplate.Shared.csproj" />
+</Solution>
