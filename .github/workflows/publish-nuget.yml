@@ -29,4 +29,4 @@ jobs:
         
       # Publish the nuget package
       - name: Push nuget package
-        run: dotnet nuget push --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ NUGET_API_KEY }} ./bin/Release/*.nupkg
+        run: dotnet nuget push --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ secrets.NUGET_API_KEY }} ./bin/Release/*.nupkg
