@@ -12,11 +12,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     
-    # Enable OIDC
-    permissions:
-      id-token: write
-      contents: read
-    
     steps:
       # Checkout code
       - name: Checkout code
@@ -28,17 +23,10 @@ jobs:
         with:
           dotnet-version: 9.0
       
-      # Login using OIDC
-      - name: NuGet Login
-        id: login
-        uses: NuGet/login@v1
-        with:
-          user: ${{ secrets.NUGET_USERNAME }}
-      
       # Run the publishing action
       - name: Pack nuget package
         run: dotnet pack --configuration Release WebAppTemplates.csproj
         
       # Publish the nuget package
       - name: Push nuget package
-        run: dotnet nuget push --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }} ./bin/Release/*.nupkg
+        run: dotnet nuget push --skip-duplicate --source https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --api-key ${{ NUGET_API_KEY }} ./bin/Release/*.nupkg
