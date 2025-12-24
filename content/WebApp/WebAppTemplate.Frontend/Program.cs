@@ -1,23 +1,12 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using ShadcnBlazor;
-using ShadcnBlazor.Extras;
-using WebAppTemplate.Frontend.Services;
-using WebAppTemplate.Frontend.UI;
+using WebAppTemplate.Frontend.Startup;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 
-builder.RootComponents.Add<App>("#app");
-builder.RootComponents.Add<HeadOutlet>("head::after");
+builder.AddWebAppTemplate();
 
-builder.Services.AddScoped<AuthenticationStateProvider, RemoteAuthProvider>();
-builder.Services.AddAuthorizationCore();
-builder.Services.AddCascadingAuthenticationState();
+var app = builder.Build();
 
-builder.Services.AddScoped(_ => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+app.UseWebAppTemplate();
 
-builder.Services.AddShadcnBlazor();
-builder.Services.AddShadcnBlazorExtras();
-
-await builder.Build().RunAsync();
+await app.RunAsync();
