@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebAppTemplate.Shared.Http.Responses.Auth;
@@ -10,6 +11,7 @@ namespace WebAppTemplate.Api.Http.Controllers;
 public class AuthController : Controller
 {
     private readonly IAuthenticationSchemeProvider SchemeProvider;
+    private readonly string[] AllowedSchemes = [OpenIdConnectDefaults.AuthenticationScheme];
 
     public AuthController(IAuthenticationSchemeProvider schemeProvider)
     {
@@ -22,7 +24,7 @@ public class AuthController : Controller
         var schemes = await SchemeProvider.GetAllSchemesAsync();
 
         return schemes
-            .Where(scheme => !string.IsNullOrWhiteSpace(scheme.DisplayName))
+            .Where(scheme => !string.IsNullOrWhiteSpace(scheme.DisplayName) && AllowedSchemes.Contains(scheme.Name))
             .Select(scheme => new SchemeResponse(scheme.Name, scheme.DisplayName!))
             .ToArray();
     }
@@ -32,7 +34,7 @@ public class AuthController : Controller
     {
         var scheme = await SchemeProvider.GetSchemeAsync(schemeName);
 
-        if (scheme == null || string.IsNullOrWhiteSpace(scheme.DisplayName))
+        if (scheme == null || string.IsNullOrWhiteSpace(scheme.DisplayName) || !AllowedSchemes.Contains(scheme.Name))
             return Problem("Invalid authentication scheme name", statusCode: 400);
 
         return Challenge(new AuthenticationProperties()
