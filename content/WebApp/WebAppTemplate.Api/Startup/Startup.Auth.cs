@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using WebAppTemplate.Api.Configuration;
 using WebAppTemplate.Api.Services;
 
@@ -53,12 +54,14 @@ public static partial class Startup
                     SecurePolicy = CookieSecurePolicy.SameAsRequest
                 };
             })
-            .AddOpenIdConnect("OIDC", "OpenID Connect", options =>
+            .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, "OpenID Connect", options =>
             {
                 options.Authority = oidcOptions.Authority;
                 options.RequireHttpsMetadata = oidcOptions.RequireHttpsMetadata;
 
                 var scopes = oidcOptions.Scopes ?? ["openid", "email", "profile"];
+                
+                options.Scope.Clear();
 
                 foreach (var scope in scopes)
                     options.Scope.Add(scope);
@@ -67,8 +70,9 @@ public static partial class Startup
                 options.ClientId = oidcOptions.ClientId;
                 options.ClientSecret = oidcOptions.ClientSecret;
                 
-                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "preferred_username");
                 options.ClaimActions.MapJsonKey(ClaimTypes.Name, "name");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "preferred_username");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Email, "email");
 
                 options.GetClaimsFromUserInfoEndpoint = true;
             });
