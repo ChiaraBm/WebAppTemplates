@@ -8,7 +8,7 @@ public static partial class Startup
 {
     private static void AddDatabase(WebApplicationBuilder builder)
     {
-        builder.Services.AddOptions<DatabaseOptions>().BindConfiguration("WebApp:Database");
+        builder.Services.AddOptions<DatabaseOptions>().BindConfiguration("WebAppTemplate:Database");
 
         builder.Services.AddDbContext<DataContext>();
         builder.Services.AddScoped(typeof(DatabaseRepository<>));

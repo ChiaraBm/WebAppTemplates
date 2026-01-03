@@ -11,7 +11,7 @@ public static partial class Startup
     private static void AddAuth(WebApplicationBuilder builder)
     {
         var oidcOptions = new OidcOptions();
-        builder.Configuration.GetSection("WebApp:Oidc").Bind(oidcOptions);
+        builder.Configuration.GetSection("WebAppTemplate:Oidc").Bind(oidcOptions);
         
         builder.Services.AddScoped<UserAuthService>();
 

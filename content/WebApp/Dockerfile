@@ -32,7 +32,7 @@ COPY . .
 
 # Build styles
 WORKDIR /src/WebAppTemplate.Frontend/Styles
-RUN npm run tailwind-build
+RUN npm run build
 
 # Build projects
 WORKDIR "/src/WebAppTemplate.Api"

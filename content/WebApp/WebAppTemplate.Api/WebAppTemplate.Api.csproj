@@ -21,7 +21,7 @@
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.1">
         <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <IncludeAssets>runtime; build; native; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
       <PackageReference Include="Riok.Mapperly" Version="4.3.1-next.0" />
@@ -32,18 +32,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        
-        <!-- Add the following xml code to hide the BuildHost folders. This is a bug in dotnet 10 and will hopefully be fixed soon -->
-        
-        <!-- 
-        <Content Update="@(Content)">
-            <Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
-        </Content>
-        -->
-        
-        <Content Update="@(Content)">
-            <Visible Condition="'%(NuGetItemType)' == 'Content'">false</Visible>
-        </Content>
         <Content Include="..\.dockerignore">
           <Link>.dockerignore</Link>
         </Content>

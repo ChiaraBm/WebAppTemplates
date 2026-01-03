@@ -36,7 +36,7 @@
 </div>
 
 <div class="mt-8">
-    <DataGrid @ref="Grid" TGridItem="UserResponse" Loader="LoadAsync" PageSize="10">
+    <DataGrid @ref="Grid" TGridItem="UserResponse" Loader="LoadAsync" PageSize="10" ClassName="bg-card">
         <PropertyColumn HeadClassName="text-left" CellClassName="text-left" Field="u => u.Id"/>
         <PropertyColumn HeadClassName="text-left" CellClassName="text-left" IsFilterable="true"
                         Identifier="@nameof(UserResponse.Username)" Field="u => u.Username"/>
