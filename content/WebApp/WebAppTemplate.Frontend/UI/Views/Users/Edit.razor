@@ -77,12 +77,12 @@
     [Parameter] public int Id { get; set; }
 
     private FormHandler Form;
-    private UpdateUserRequest Request;
-    private UserResponse User;
+    private UpdateUserDto Request;
+    private UserDto User;
     
     private async Task LoadAsync(LazyLoader _)
     {
-        var user = await HttpClient.GetFromJsonAsync<UserResponse>($"api/users/{Id}",  Constants.SerializerOptions);
+        var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{Id}",  Constants.SerializerOptions);
         User = user!;
         
         Request = UserMapper.MapToUpdate(User);

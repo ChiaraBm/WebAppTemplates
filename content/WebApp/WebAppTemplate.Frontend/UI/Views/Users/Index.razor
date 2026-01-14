@@ -36,12 +36,12 @@
 </div>
 
 <div class="mt-8">
-    <DataGrid @ref="Grid" TGridItem="UserResponse" Loader="LoadAsync" PageSize="10" ClassName="bg-card">
+    <DataGrid @ref="Grid" TGridItem="UserDto" Loader="LoadAsync" PageSize="10" ClassName="bg-card">
         <PropertyColumn HeadClassName="text-left" CellClassName="text-left" Field="u => u.Id"/>
         <PropertyColumn HeadClassName="text-left" CellClassName="text-left" IsFilterable="true"
-                        Identifier="@nameof(UserResponse.Username)" Field="u => u.Username"/>
+                        Identifier="@nameof(UserDto.Username)" Field="u => u.Username"/>
         <PropertyColumn HeadClassName="text-left" CellClassName="text-left" IsFilterable="true"
-                        Identifier="@nameof(UserResponse.Email)" Field="u => u.Email"/>
+                        Identifier="@nameof(UserDto.Email)" Field="u => u.Email"/>
         <TemplateColumn>
             <CellTemplate>
                 <TableCell>
@@ -78,24 +78,24 @@
 
 @code
 {
-    private DataGrid<UserResponse> Grid;
+    private DataGrid<UserDto> Grid;
     
-    private async Task<DataGridResponse<UserResponse>> LoadAsync(DataGridRequest<UserResponse> request)
+    private async Task<DataGridResponse<UserDto>> LoadAsync(DataGridRequest<UserDto> request)
     {
         var query = $"?startIndex={request.StartIndex}&length={request.Length}";
         var filterOptions = request.Filters.Count > 0 ? new FilterOptions(request.Filters) : null;
 
-        var response = await HttpClient.GetFromJsonAsync<PagedData<UserResponse>>(
+        var response = await HttpClient.GetFromJsonAsync<PagedData<UserDto>>(
             $"api/users{query}&filterOptions={filterOptions}",
             Constants.SerializerOptions
         );
 
-        return new DataGridResponse<UserResponse>(response!.Data, response.TotalLength);
+        return new DataGridResponse<UserDto>(response!.Data, response.TotalLength);
     }
 
-    private void Edit(UserResponse response) => Navigation.NavigateTo($"/users/{response.Id}");
+    private void Edit(UserDto dto) => Navigation.NavigateTo($"/users/{dto.Id}");
 
-    private async Task DeleteAsync(UserResponse user)
+    private async Task DeleteAsync(UserDto user)
     {
         await AlertDialogService.ConfirmDangerAsync(
             $"Deletion of user {user.Username}",

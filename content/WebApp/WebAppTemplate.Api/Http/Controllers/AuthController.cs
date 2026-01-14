@@ -19,13 +19,13 @@ public class AuthController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<SchemeResponse[]>> GetSchemesAsync()
+    public async Task<ActionResult<SchemeDto[]>> GetSchemesAsync()
     {
         var schemes = await SchemeProvider.GetAllSchemesAsync();
 
         return schemes
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.DisplayName) && AllowedSchemes.Contains(scheme.Name))
-            .Select(scheme => new SchemeResponse(scheme.Name, scheme.DisplayName!))
+            .Select(scheme => new SchemeDto(scheme.Name, scheme.DisplayName!))
             .ToArray();
     }
 
@@ -45,13 +45,13 @@ public class AuthController : Controller
 
     [Authorize]
     [HttpGet("claims")]
-    public Task<ActionResult<ClaimResponse[]>> GetClaimsAsync()
+    public Task<ActionResult<ClaimDto[]>> GetClaimsAsync()
     {
         var result = User.Claims
-            .Select(claim => new ClaimResponse(claim.Type, claim.Value))
+            .Select(claim => new ClaimDto(claim.Type, claim.Value))
             .ToArray();
 
-        return Task.FromResult<ActionResult<ClaimResponse[]>>(result);
+        return Task.FromResult<ActionResult<ClaimDto[]>>(result);
     }
 
     [HttpGet("logout")]

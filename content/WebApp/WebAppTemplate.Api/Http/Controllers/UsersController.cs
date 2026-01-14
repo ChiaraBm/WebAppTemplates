@@ -24,7 +24,7 @@ public class UsersController : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedData<UserResponse>>> GetAsync(
+    public async Task<ActionResult<PagedData<UserDto>>> GetAsync(
         [FromQuery] int startIndex,
         [FromQuery] int length,
         [FromQuery] FilterOptions? filterOptions
@@ -60,18 +60,19 @@ public class UsersController : Controller
 
         // Pagination
         var data = await query
-            .ProjectToResponse()
+            .OrderBy(x => x.Id)
             .Skip(startIndex)
             .Take(length)
+            .ProjectToDto()
             .ToArrayAsync();
 
         var total = await query.CountAsync();
 
-        return new PagedData<UserResponse>(data, total);
+        return new PagedData<UserDto>(data, total);
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<UserResponse>> GetAsync([FromRoute] int id)
+    public async Task<ActionResult<UserDto>> GetAsync([FromRoute] int id)
     {
         var user = await UserRepository
             .Query()
@@ -80,22 +81,22 @@ public class UsersController : Controller
         if (user == null)
             return Problem("No user with this id found", statusCode: 404);
 
-        return UserMapper.MapToResponse(user);
+        return UserMapper.ToDto(user);
     }
 
     [HttpPost]
-    public async Task<ActionResult<UserResponse>> CreateAsync([FromBody] CreateUserRequest request)
+    public async Task<ActionResult<UserDto>> CreateAsync([FromBody] CreateUserDto request)
     {
-        var user = UserMapper.MapToUser(request);
+        var user = UserMapper.ToEntity(request);
         user.InvalidateTimestamp = DateTimeOffset.UtcNow.AddMinutes(-1);
 
         var finalUser = await UserRepository.AddAsync(user);
 
-        return UserMapper.MapToResponse(finalUser);
+        return UserMapper.ToDto(finalUser);
     }
 
     [HttpPatch("{id:int}")]
-    public async Task<ActionResult<UserResponse>> UpdateAsync([FromRoute] int id, [FromBody] UpdateUserRequest request)
+    public async Task<ActionResult<UserDto>> UpdateAsync([FromRoute] int id, [FromBody] UpdateUserDto request)
     {
         var user = await UserRepository
             .Query()
@@ -107,7 +108,7 @@ public class UsersController : Controller
         UserMapper.Merge(user, request);
         await UserRepository.UpdateAsync(user);
 
-        return UserMapper.MapToResponse(user);
+        return UserMapper.ToDto(user);
     }
 
     [HttpDelete("{id:int}")]

@@ -6,12 +6,12 @@ using WebAppTemplate.Shared.Http.Responses.Users;
 
 namespace WebAppTemplate.Shared.Http;
 
-[JsonSerializable(typeof(CreateUserRequest))]
-[JsonSerializable(typeof(UpdateUserRequest))]
-[JsonSerializable(typeof(ClaimResponse[]))]
-[JsonSerializable(typeof(SchemeResponse[]))]
-[JsonSerializable(typeof(UserResponse))]
-[JsonSerializable(typeof(PagedData<UserResponse>))]
+[JsonSerializable(typeof(CreateUserDto))]
+[JsonSerializable(typeof(UpdateUserDto))]
+[JsonSerializable(typeof(ClaimDto[]))]
+[JsonSerializable(typeof(SchemeDto[]))]
+[JsonSerializable(typeof(UserDto))]
+[JsonSerializable(typeof(PagedData<UserDto>))]
 public partial class SerializationContext : JsonSerializerContext
 {
     

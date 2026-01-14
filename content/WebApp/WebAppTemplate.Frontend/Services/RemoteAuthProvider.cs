@@ -21,7 +21,7 @@ public class RemoteAuthProvider : AuthenticationStateProvider
     {
         try
         {
-            var claimResponses = await HttpClient.GetFromJsonAsync<ClaimResponse[]>(
+            var claimResponses = await HttpClient.GetFromJsonAsync<ClaimDto[]>(
                 "api/auth/claims", Constants.SerializerOptions
             );
 

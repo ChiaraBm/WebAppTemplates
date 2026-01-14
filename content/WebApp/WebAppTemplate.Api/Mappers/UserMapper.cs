@@ -11,11 +11,11 @@ namespace WebAppTemplate.Api.Mappers;
 [SuppressMessage("Mapper", "RMG012:No members are mapped in an object mapping")]
 public static partial class UserMapper
 {
-    public static partial IQueryable<UserResponse> ProjectToResponse(this IQueryable<User> users);
+    public static partial IQueryable<UserDto> ProjectToDto(this IQueryable<User> users);
 
-    public static partial UserResponse MapToResponse(User user);
+    public static partial UserDto ToDto(User user);
 
-    public static partial void Merge([MappingTarget] User user, UpdateUserRequest request);
+    public static partial void Merge([MappingTarget] User user, UpdateUserDto request);
     
-    public static partial User MapToUser(CreateUserRequest request);
+    public static partial User ToEntity(CreateUserDto request);
 }

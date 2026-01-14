@@ -40,14 +40,14 @@
 
 @code
 {
-    private SchemeResponse[]? Schemes;
+    private SchemeDto[]? Schemes;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (!firstRender)
         return;
         
-        var schemes = await HttpClient.GetFromJsonAsync<SchemeResponse[]>(
+        var schemes = await HttpClient.GetFromJsonAsync<SchemeDto[]>(
             "api/auth", Constants.SerializerOptions
         );
         

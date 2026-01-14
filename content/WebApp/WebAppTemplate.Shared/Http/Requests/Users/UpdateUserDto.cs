@@ -2,7 +2,7 @@
 
 namespace WebAppTemplate.Shared.Http.Requests.Users;
 
-public class CreateUserRequest
+public class UpdateUserDto
 {
     [Required]
     [MinLength(3)]
