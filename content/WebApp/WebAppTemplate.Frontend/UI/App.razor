@@ -1,4 +1,5 @@
-﻿@using LucideBlazor
+﻿@using System.Net
+@using LucideBlazor
 @using Microsoft.AspNetCore.Components.Authorization
 @using ShadcnBlazor.Emptys
 @using WebAppTemplate.Frontend.UI.Components.Auth
@@ -35,20 +36,27 @@
         </AuthorizeView>
     </ChildContent>
     <ErrorContent>
-        <div class="m-10">
-            <Empty>
-                <EmptyHeader>
-                    <EmptyMedia Variant="EmptyMediaVariant.Icon">
-                        <OctagonAlertIcon ClassName="text-red-500/80"/>
-                    </EmptyMedia>
-                    <EmptyTitle>
-                        Critical Application Error
-                    </EmptyTitle>
-                    <EmptyDescription>
-                        @context.ToString()
-                    </EmptyDescription>
-                </EmptyHeader>
-            </Empty>
-        </div>
+        @if (context is HttpRequestException { StatusCode: HttpStatusCode.Unauthorized })
+        {
+            <Authentication/>
+        }
+        else
+        {
+            <div class="m-10">
+                <Empty>
+                    <EmptyHeader>
+                        <EmptyMedia Variant="EmptyMediaVariant.Icon">
+                            <OctagonAlertIcon ClassName="text-red-500/80"/>
+                        </EmptyMedia>
+                        <EmptyTitle>
+                            Critical Application Error
+                        </EmptyTitle>
+                        <EmptyDescription>
+                            @context.ToString()
+                        </EmptyDescription>
+                    </EmptyHeader>
+                </Empty>
+            </div>
+        }
     </ErrorContent>
 </ErrorBoundary>
