@@ -1,10 +1,10 @@
 ﻿@import "tailwindcss";
 @import "tw-animate-css";
 
-@import "./node_modules/shadcnblazor/scrollbar.css";
-@import "./node_modules/shadcnblazor/default-theme.css";
+@import "../bin/ShadcnBlazor/scrollbar.css";
+@import "../bin/ShadcnBlazor/default-theme.css";
 @import "./theme.css";
-@source "./node_modules/shadcnblazor/classes.json";
+@source "../bin/ShadcnBlazor/ShadcnBlazor.map";
 
 @source "../**/*.razor";
 @source "../**/*.cs";
