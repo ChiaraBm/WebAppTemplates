@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <PackageId>WebAppTemplates</PackageId>
-        <Version>1.0.4</Version>
+        <Version>1.0.5</Version>
         <Title>WebAppTemplates</Title>
         <Authors>ChiaraBm</Authors>
         <Description>Templates for web based applications</Description>
