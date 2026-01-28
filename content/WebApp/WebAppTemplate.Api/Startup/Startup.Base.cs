@@ -19,6 +19,8 @@ public static partial class Startup
             options.FormatterName = nameof(AppConsoleFormatter);
         });
         builder.Logging.AddConsoleFormatter<AppConsoleFormatter, ConsoleFormatterOptions>();
+
+        builder.Services.AddMemoryCache();
     }
 
     private static void UseBase(WebApplication application)

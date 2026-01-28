@@ -78,6 +78,8 @@ public static partial class Startup
             });
 
         builder.Services.AddAuthorization();
+
+        builder.Services.AddOptions<SessionsOptions>().BindConfiguration("WebAppTemplate:Sessions");
     }
 
     private static void UseAuth(WebApplication application)

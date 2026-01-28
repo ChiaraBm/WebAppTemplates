@@ -1,5 +1,8 @@
 ﻿using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using WebAppTemplate.Api.Configuration;
 using WebAppTemplate.Api.Database;
 using WebAppTemplate.Api.Database.Entities;
 
@@ -7,16 +10,26 @@ namespace WebAppTemplate.Api.Services;
 
 public class UserAuthService
 {
-    private readonly DatabaseRepository<User> UserRepository;
+    private readonly IMemoryCache MemoryCache;
     private readonly ILogger<UserAuthService> Logger;
+    private readonly DatabaseRepository<User> UserRepository;
+    private readonly IOptions<SessionsOptions> SessionsOptions;
 
     private const string UserIdClaim = "UserId";
     private const string IssuedAtClaim = "IssuedAt";
-    
-    public UserAuthService(DatabaseRepository<User> userRepository, ILogger<UserAuthService> logger)
+    private const string CacheKeyFormat = $"{nameof(UserAuthService)}_{nameof(ValidateAsync)}_{{0}}";
+
+    public UserAuthService(
+        DatabaseRepository<User> userRepository,
+        ILogger<UserAuthService> logger,
+        IOptions<SessionsOptions> sessionsOptions,
+        IMemoryCache memoryCache
+    )
     {
         UserRepository = userRepository;
         Logger = logger;
+        SessionsOptions = sessionsOptions;
+        MemoryCache = memoryCache;
     }
 
     public async Task<bool> SyncAsync(ClaimsPrincipal? principal)
@@ -32,7 +45,7 @@ public class UserAuthService
             Logger.LogWarning("Unable to sync user to database as name and/or email claims are missing");
             return false;
         }
-        
+
         // We use email as the primary identifier here
         var user = await UserRepository
             .Query()
@@ -54,7 +67,7 @@ public class UserAuthService
 
             await UserRepository.UpdateAsync(user);
         }
-        
+
         principal.Identities.First().AddClaims([
             new Claim(UserIdClaim, user.Id.ToString()),
             new Claim(IssuedAtClaim, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString())
@@ -66,20 +79,12 @@ public class UserAuthService
     public async Task<bool> ValidateAsync(ClaimsPrincipal? principal)
     {
         // Ignore malformed claims principal
-        if(principal is not { Identity.IsAuthenticated: true })
+        if (principal is not { Identity.IsAuthenticated: true })
             return false;
 
         var userIdString = principal.FindFirstValue(UserIdClaim);
 
         if (!int.TryParse(userIdString, out var userId))
-            return false;
-
-        var user = await UserRepository
-            .Query()
-            .AsNoTracking()
-            .FirstOrDefaultAsync(user => user.Id == userId);
-
-        if (user == null)
             return false;
 
         var issuedAtString = principal.FindFirstValue(IssuedAtClaim);
@@ -88,11 +93,34 @@ public class UserAuthService
             return false;
 
         var issuedAt = DateTimeOffset.FromUnixTimeSeconds(issuedAtUnix).ToUniversalTime();
+        
+        // Handle caching
+        var cacheKey = string.Format(CacheKeyFormat, userId);
 
-        // If the issued at timestamp is greater than the token validation timestamp
-        // everything is fine. If not it means that the token should be invalidated
+        if (!MemoryCache.TryGetValue<UserSession>(cacheKey, out var session))
+        {
+            session = await UserRepository
+                .Query()
+                .AsNoTracking()
+                .Where(user => user.Id == userId)
+                .Select(user => new UserSession(user.InvalidateTimestamp))
+                .FirstOrDefaultAsync();
+
+            if (session == null)
+                return false;
+            
+            MemoryCache.Set(cacheKey, session, TimeSpan.FromMinutes(SessionsOptions.Value.CacheMinutes));
+        }
+
+        // If the issued at timestamp is greater than the token validation timestamp,
+        // everything is fine. If not, it means that the token should be invalidated
         // as it is too old
         
-        return issuedAt > user.InvalidateTimestamp;
+        if(session == null)
+            return false;
+
+        return issuedAt > session.InvalidateTimestamp;
     }
+
+    private record UserSession(DateTimeOffset InvalidateTimestamp);
 }

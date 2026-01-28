@@ -2,11 +2,11 @@
 
 @using LucideBlazor
 @using ShadcnBlazor.Buttons
-@using ShadcnBlazor.Labels
 @using ShadcnBlazor.Cards
 @using ShadcnBlazor.Extras.Common
-@using ShadcnBlazor.Extras.FormHandlers
+@using ShadcnBlazor.Extras.Forms
 @using ShadcnBlazor.Extras.Toasts
+@using ShadcnBlazor.Fields
 @using ShadcnBlazor.Inputs
 @using WebAppTemplate.Frontend.Mappers
 @using WebAppTemplate.Shared.Http.Requests.Users
@@ -16,84 +16,95 @@
 @inject NavigationManager Navigation
 @inject ToastService ToastService
 
-<div class="flex flex-row justify-between">
-    <div class="flex flex-col">
-        <h1 class="text-xl font-semibold">Update user</h1>
-        <div class="text-muted-foreground">
-            Update an existing user
+<LazyLoader Load="LoadAsync">
+    <EnhancedEditForm Model="Request" OnValidSubmit="OnSubmitAsync" Context="formContext">
+
+        <div class="flex flex-row justify-between">
+            <div class="flex flex-col">
+                <h1 class="text-xl font-semibold">Update user</h1>
+                <div class="text-muted-foreground">
+                    Update an existing user
+                </div>
+            </div>
+            <div class="flex flex-row gap-x-1.5">
+                <Button Variant="ButtonVariant.Secondary">
+                    <Slot>
+                        <a href="/users" @attributes="context">
+                            <ChevronLeftIcon/>
+                            Back
+                        </a>
+                    </Slot>
+                </Button>
+                <SubmitButton>
+                    <CheckIcon/>
+                    Continue
+                </SubmitButton>
+            </div>
         </div>
-    </div>
-    <div class="flex flex-row gap-x-1.5">
-        <Button Variant="ButtonVariant.Secondary">
-            <Slot>
-                <a href="/users" @attributes="context">
-                    <ChevronLeftIcon/>
-                    Back
-                </a>
-            </Slot>
-        </Button>
-        <Button @onclick="() => Form.SubmitAsync()">
-            <CheckIcon/>
-            Continue
-        </Button>
-    </div>
-</div>
 
-<div class="mt-8">
-    <Card>
-        <CardContent>
-            <LazyLoader Load="LoadAsync">
-                <FormHandler @ref="Form" OnValidSubmit="OnSubmitAsync" Model="Request">
-                    <div class="flex flex-col gap-6">
-                    
-                        <FormValidationSummary />
-                    
-                        <div class="grid gap-2">
-                            <Label for="email">Email</Label>
-                            <TextInputField
-                                @bind-Value="Request.Email"
-                                id="email"
-                                Type="email"
-                                placeholder="m@example.com"/>
-                        </div>
+        <div class="mt-8">
+            <Card>
+                <CardContent>
+                    <DataAnnotationsValidator/>
 
-                        <div class="grid gap-2">
-                            <Label for="username">Username</Label>
-                            <TextInputField
-                                @bind-Value="Request.Username"
-                                id="username"
-                                Type="text"
-                                placeholder="example_user"/>
-                        </div>
-                    </div>
-                </FormHandler>
-            </LazyLoader>
-        </CardContent>
-    </Card>
-</div>
+                    <FieldGroup>
+                        <FormValidationSummary/>
+
+                        <FieldSet>
+                            <Field>
+                                <FieldLabel for="email">Email</FieldLabel>
+                                <TextInputField
+                                    @bind-Value="Request.Email"
+                                    id="email"
+                                    Type="email"
+                                    placeholder="m@example.com"/>
+                            </Field>
+
+                            <Field>
+                                <FieldLabel for="username">Username</FieldLabel>
+                                <TextInputField
+                                    @bind-Value="Request.Username"
+                                    id="username"
+                                    Type="text"
+                                    placeholder="example_user"/>
+                            </Field>
+                        </FieldSet>
+                    </FieldGroup>
+                </CardContent>
+            </Card>
+        </div>
+
+    </EnhancedEditForm>
+</LazyLoader>
 
 @code
 {
     [Parameter] public int Id { get; set; }
 
-    private FormHandler Form;
     private UpdateUserDto Request;
     private UserDto User;
-    
+
     private async Task LoadAsync(LazyLoader _)
     {
-        var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{Id}",  Constants.SerializerOptions);
+        var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{Id}", Constants.SerializerOptions);
         User = user!;
-        
-        Request = UserMapper.MapToUpdate(User);
+
+        Request = UserMapper.ToUpdate(User);
     }
-    
-    private async Task OnSubmitAsync()
+
+    private async Task<bool> OnSubmitAsync(EditContext context, ValidationMessageStore messageStore)
     {
-        await HttpClient.PatchAsJsonAsync(
+        var response = await HttpClient.PatchAsJsonAsync(
             $"/api/users/{User.Id}",
             Request
         );
+
+        if (!response.IsSuccessStatusCode)
+        {
+            
+            
+            return false;
+        }
 
         await ToastService.SuccessAsync(
             "User update",
@@ -101,5 +112,6 @@
         );
 
         Navigation.NavigateTo("/users");
+        return true;
     }
 }
