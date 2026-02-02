@@ -8,6 +8,7 @@
 @using ShadcnBlazor.Extras.Toasts
 @using ShadcnBlazor.Fields
 @using ShadcnBlazor.Inputs
+@using WebAppTemplate.Frontend.Helpers
 @using WebAppTemplate.Frontend.Mappers
 @using WebAppTemplate.Shared.Http.Requests.Users
 @using WebAppTemplate.Shared.Http.Responses.Users
@@ -92,7 +93,7 @@
         Request = UserMapper.ToUpdate(User);
     }
 
-    private async Task<bool> OnSubmitAsync(EditContext context, ValidationMessageStore messageStore)
+    private async Task<bool> OnSubmitAsync(EditContext context, ValidationMessageStore validationMessageStore)
     {
         var response = await HttpClient.PatchAsJsonAsync(
             $"/api/users/{User.Id}",
@@ -101,13 +102,12 @@
 
         if (!response.IsSuccessStatusCode)
         {
-            
-            
+            await ProblemDetailsHelper.HandleProblemDetailsAsync(response, Request, validationMessageStore);
             return false;
         }
 
         await ToastService.SuccessAsync(
-            "User update",
+            "User Update",
             $"Successfully updated user {Request.Username}"
         );
 

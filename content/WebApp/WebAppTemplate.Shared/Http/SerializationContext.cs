@@ -12,6 +12,7 @@ namespace WebAppTemplate.Shared.Http;
 [JsonSerializable(typeof(SchemeDto[]))]
 [JsonSerializable(typeof(UserDto))]
 [JsonSerializable(typeof(PagedData<UserDto>))]
+[JsonSerializable(typeof(ProblemDetails))]
 public partial class SerializationContext : JsonSerializerContext
 {
     
