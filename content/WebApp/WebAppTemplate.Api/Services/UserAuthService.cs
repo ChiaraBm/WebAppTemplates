@@ -49,7 +49,6 @@ public class UserAuthService
         // We use email as the primary identifier here
         var user = await UserRepository
             .Query()
-            .AsNoTracking()
             .FirstOrDefaultAsync(user => user.Email == email);
 
         if (user == null) // Sync user if not already existing in the database
