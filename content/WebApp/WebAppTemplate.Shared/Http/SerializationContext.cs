@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 using WebAppTemplate.Shared.Http.Requests.Users;
 using WebAppTemplate.Shared.Http.Responses;
 using WebAppTemplate.Shared.Http.Responses.Auth;
@@ -13,6 +14,8 @@ namespace WebAppTemplate.Shared.Http;
 [JsonSerializable(typeof(UserDto))]
 [JsonSerializable(typeof(PagedData<UserDto>))]
 [JsonSerializable(typeof(ProblemDetails))]
+
+[JsonSourceGenerationOptions(JsonSerializerDefaults.Web)]
 public partial class SerializationContext : JsonSerializerContext
 {
     

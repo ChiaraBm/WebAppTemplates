@@ -10,6 +10,7 @@
 @using ShadcnBlazor.Inputs
 @using WebAppTemplate.Frontend.Helpers
 @using WebAppTemplate.Frontend.Mappers
+@using WebAppTemplate.Shared.Http
 @using WebAppTemplate.Shared.Http.Requests.Users
 @using WebAppTemplate.Shared.Http.Responses.Users
 
@@ -87,7 +88,7 @@
 
     private async Task LoadAsync(LazyLoader _)
     {
-        var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{Id}", Constants.SerializerOptions);
+        var user = await HttpClient.GetFromJsonAsync<UserDto>($"api/users/{Id}", SerializationContext.Default.Options);
         User = user!;
 
         Request = UserMapper.ToUpdate(User);

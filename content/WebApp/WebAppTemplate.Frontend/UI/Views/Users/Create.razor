@@ -8,6 +8,7 @@
 @using ShadcnBlazor.Fields
 @using ShadcnBlazor.Inputs
 @using WebAppTemplate.Frontend.Helpers
+@using WebAppTemplate.Shared.Http
 @using WebAppTemplate.Shared.Http.Requests.Users
 
 @inject HttpClient HttpClient
@@ -82,7 +83,7 @@
         var response = await HttpClient.PostAsJsonAsync(
             "/api/users",
             Request,
-            Constants.SerializerOptions
+            SerializationContext.Default.Options
         );
 
         if (!response.IsSuccessStatusCode)

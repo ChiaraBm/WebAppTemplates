@@ -1,6 +1,7 @@
 ﻿@using ShadcnBlazor.Cards
 @using ShadcnBlazor.Spinners
 @using ShadcnBlazor.Buttons
+@using WebAppTemplate.Shared.Http
 @using WebAppTemplate.Shared.Http.Responses.Auth
 
 @inject HttpClient HttpClient
@@ -48,7 +49,7 @@
         return;
         
         var schemes = await HttpClient.GetFromJsonAsync<SchemeDto[]>(
-            "api/auth", Constants.SerializerOptions
+            "api/auth", SerializationContext.Default.Options
         );
         
         if(schemes == null)

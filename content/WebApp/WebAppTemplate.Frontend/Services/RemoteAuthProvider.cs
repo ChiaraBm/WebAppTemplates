@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Components.Authorization;
+using WebAppTemplate.Shared.Http;
 using WebAppTemplate.Shared.Http.Responses.Auth;
 
 namespace WebAppTemplate.Frontend.Services;
@@ -22,7 +23,7 @@ public class RemoteAuthProvider : AuthenticationStateProvider
         try
         {
             var claimResponses = await HttpClient.GetFromJsonAsync<ClaimDto[]>(
-                "api/auth/claims", Constants.SerializerOptions
+                "api/auth/claims", SerializationContext.Default.Options
             );
 
             var claims = claimResponses!.Select(claim => new Claim(claim.Type, claim.Value));
